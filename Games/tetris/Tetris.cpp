@@ -1,6 +1,6 @@
 ﻿#include "Tetris.h"
 
-void Tetris::game_init()  {
+void Tetris::game_init() {
 	//const char* file_path = "sample1.wav";
 	//sound_play(file_path);
 
@@ -66,7 +66,7 @@ void Tetris::game_init()  {
 	// 최종 릴리즈에서 지워도 된다. 보기 불편하다면 주석처리
 	//getchar();
 
-	board_init(gboard, (int (*)[BOARD_WIDTH])board_data_attributes); // 보드 데이터로 보드를 초기화 한다.
+	board_init(gboard, (int(*)[BOARD_WIDTH])board_data_attributes); // 보드 데이터로 보드를 초기화 한다.
 
 
 	//block_init(&my_block, BLOCK_S); // 초기화
@@ -122,13 +122,13 @@ void Tetris::game_start() {
 	block_init(&my_block, BLOCK_S); // 초기화
 
 	board_clear_data(gboard); // 보드를 지운다. (정확히 말하자면, 보드 데이터 내의 내용을 지운다. 화면을 지우는게 아니라.)
-	board_insert_block(gboard, &my_block, 2, 2);
+	board_insert_block(gboard, &my_block, BLOCK_START_X, BLOCK_START_Y);
 	board_draw(&console, gboard);
 
 	startT = endT = clock();
 }
 
-void Tetris::game_over(){
+void Tetris::game_over() {
 	std::cout << "game_over\n";
 }
 
@@ -137,20 +137,20 @@ void Tetris::key_input(char key_code) {
 	int duration = (int)(endT - startT);
 
 	if (duration >= INTERVAL_TIME) {
-		bool ret = board_move_block(&console, gboard, &my_block, DIR_DOWN);
-		if (ret == false) {
+		bool canMove = board_move_block(&console, gboard, &my_block, DIR_DOWN);
+		if (canMove == false) {
 			board_change_N_to_F(gboard);
 
-			// 부칸 확인
+			// 꽉찬 행 삭제 후 중력
+			board_clear_filled_row(gboard);
 
 			// 다음 블록 소환
 			block_shapes_t rand_block = (block_shapes_t)(rand() % BLOCK_MAX);
-
 			block_init(&my_block, rand_block); // 초기화
 			//block_set_xy(&my_block, 0, 0);
 
 			//board_clear_data(gboard);
-			board_insert_block(gboard, &my_block, 2, 2);
+			board_insert_block(gboard, &my_block, BLOCK_START_X, BLOCK_START_Y);
 			board_draw(&console, gboard);
 		}
 
@@ -160,9 +160,6 @@ void Tetris::key_input(char key_code) {
 	}
 
 	switch (key_code) {
-
-	case NULL:
-		break;
 
 	case KEY_UP:
 		board_rotate_block(&console, gboard, &my_block);
@@ -181,8 +178,7 @@ void Tetris::key_input(char key_code) {
 		break;
 
 	case KEY_SPACE:
-		//my_block.y = 
-		//board_move_block(&console, gboard, &my_block, DIR_RIGHT);
+		board_move_block_to_bottom(&console, gboard, &my_block);
 		break;
 	}
 

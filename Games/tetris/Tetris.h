@@ -15,16 +15,15 @@ extern "C" {
 
 #include "../../IGame.h"
 
-#pragma comment(lib, "winmm.lib") // winmm 라이브러리 링크
-
-#define BOARD_START_X (4)
-#define BOARD_START_Y (4)
+//#pragma comment(lib, "winmm.lib") // winmm 라이브러리 링크
 
 class Tetris : public IGame {
 private:
 	// 전체 보드 전역 변수
 	cell_t gboard[BOARD_HEIGHT][BOARD_WIDTH] = { 0, };
+
 	windows_console_t console;
+
 	block_t my_block;
 
 	// 블럭의 초기 정보를 갖고 있는 데이터
@@ -52,8 +51,12 @@ private:
 	{ E, E, E, E, E, E, E, E, E, E, E, E }, // (20,0),(20,1),(20,2),(20,3),(20,4),(20,5),(20,6),(20,7),(20,8),(20,9),(20,10),(20,11)
 	};
 
+	const int BLOCK_START_X = (BOARD_WIDTH / 2) - (BLOCK_WIDTH / 2);
+	const int BLOCK_START_Y = 0;
+
+	const int INTERVAL_TIME = 500; // ms 단위
+
 	clock_t startT, endT;
-	const int INTERVAL_TIME = 300; // ms 단위
 
 public:
 	void game_init() override;

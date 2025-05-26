@@ -116,9 +116,23 @@ bool board_move_block(windows_console_t* console, cell_t board[BOARD_HEIGHT][BOA
 	return true;
 }
 
-//void board_move_block(windows_console_t* console, cell_t board[BOARD_HEIGHT][BOARD_WIDTH], block_t* block, uint8_t dir) {
-//
-//}
+void board_move_block_to_bottom(windows_console_t* console, cell_t board[BOARD_HEIGHT][BOARD_WIDTH], block_t* block) {
+	block_t curBlock = *block;
+	block_t chgBlock = *block;
+	chgBlock.y++;
+
+	while (!hasCollision(board, &curBlock, &chgBlock)) {
+		curBlock = chgBlock;
+		chgBlock.y++;
+	}
+
+	block->y = curBlock.y;
+
+	board_clear_data(board);
+	board_insert_block(board, block, block->x, block->y);
+	board_draw(console, board);
+}
+
 
 // rotateBlockOnBoard, roate_block_on_board
 void board_rotate_block(windows_console_t* console, cell_t board[BOARD_HEIGHT][BOARD_WIDTH], block_t* block) {
@@ -146,8 +160,8 @@ void board_draw(windows_console_t* console, cell_t board[BOARD_HEIGHT][BOARD_WID
 				break;
 
 			case N:
-				//console_set_fore_color(console, board[i][j].color);
-				console_set_fore_color(console, RED);
+				console_set_fore_color(console, board[i][j].color);
+				//console_set_fore_color(console, RED);
 				cell_draw(&board[i][j], board[i][j].point.x, board[i][j].point.y);
 				console_set_default_color(console);
 				break;
@@ -160,7 +174,7 @@ void board_draw(windows_console_t* console, cell_t board[BOARD_HEIGHT][BOARD_WID
 				break;
 
 			case F:
-				console_set_fore_color(console, BLUE);
+				console_set_fore_color(console, board[i][j].color);
 				cell_draw(&board[i][j], board[i][j].point.x, board[i][j].point.y);
 				console_set_default_color(console);
 				break;
@@ -198,6 +212,43 @@ void board_change_N_to_F(cell_t board[BOARD_HEIGHT][BOARD_WIDTH]) {
 	}
 }
 
+void board_clear_filled_row(cell_t board[BOARD_HEIGHT][BOARD_WIDTH]) {
+	for (int row = BOARD_HEIGHT - 1; row >= 0; row--) {
+		bool full = true;
+		int w_cnt = 0;
+		for (int col = 0; col < BOARD_WIDTH; col++) {
+			if (board[row][col].att == E) {
+				full = false;
+				break;
+			}
+			else if (board[row][col].att == W) {
+				w_cnt++;
+			}
+		}
+
+		if (full && (w_cnt != BOARD_WIDTH)) {
+			// 이 행을 없애고, 위의 행들을 모두 아래로 이동
+			for (int move_row = row; move_row > 0; move_row--) {
+				for (int col = 0; col < BOARD_WIDTH; col++) {
+					if (board[move_row][col].att == W) continue;
+					board[move_row][col].color = board[move_row - 1][col].color;
+					board[move_row][col].att = board[move_row - 1][col].att;
+				}
+			}
+
+			// 최상단 행은 비워줌
+			for (int col = 0; col < BOARD_WIDTH; col++) {
+				if (board[0][col].att == W) continue;
+				//board[0][col].color = YELLOW;
+				board[0][col].att = E;
+			}
+
+			// 같은 행을 다시 검사해야 하므로 row를 증가시킴
+			row++;
+		}
+	}
+}
+
 // block 배열을 현재 위치(block_x, block_y)를 기준으로 board에 복사합니다.
 void board_insert_block(cell_t board[BOARD_HEIGHT][BOARD_WIDTH], block_t* block, int block_x, int block_y) {
 	block->x = block_x;
@@ -209,6 +260,7 @@ void board_insert_block(cell_t board[BOARD_HEIGHT][BOARD_WIDTH], block_t* block,
 			int board_x = block->x + j;
 			if (board_y < 0 || board_y >= BOARD_HEIGHT || board_x < 0 || board_x >= BOARD_WIDTH) continue;
 			if (board[board_y][board_x].att != 0) continue;
+			board[board_y][board_x].color = block->color;
 			board[board_y][board_x].att = block->att[block->rotation_index][i][j];
 			//printf("block pos(x,y)=(%02d,%02d)\r\n", block->x, block -> y);
 			//printf("(%d,%d)=%d,", i, j, block->att[block->rotation_index][i][j]);
