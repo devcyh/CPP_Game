@@ -1,12 +1,13 @@
 #pragma once
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <windows.h>
 
-
 #include "../../core/inc/color.h"
-
 
 #include "../../model.h"
 
@@ -23,7 +24,7 @@ void console_clear(windows_console_t* console);
 void console_set_cursor(windows_console_t* console, uint32_t x, uint32_t y, bool value);
 void console_init(windows_console_t* console);
 void console_display_info(const windows_console_t* console);
-void console_set_fore_color(windows_console_t* console, uint8_t fore_color) ;
+void console_set_fore_color(windows_console_t* console, uint8_t fore_color);
 void console_set_back_color(windows_console_t* console, uint8_t back_color);
 void console_set_color(windows_console_t* console, uint8_t fore_color, uint8_t back_color);
 void console_set_default_color(windows_console_t* console);
