@@ -1,0 +1,60 @@
+# 모든 파일 무시
+*
+
+# 예외 처리: .cpp, .c, .h 파일 포함
+!*.cpp
+!*.c
+!*.h
+
+# 예외 처리: .gitignore 포함
+!.gitignore
+
+# 예외 처리: Git이 디렉터리 구조를 인식할 수 있도록
+!*/
+
+# 무시할 수 있는 일반적인 Visual Studio 관련 파일들
+.vs/
+*.vcxproj*
+*.sln
+*.obj
+*.pdb
+*.idb
+*.ipch
+*.aps
+*.ncb
+*.sdf
+*.opensdf
+*.user
+*.suo
+*.cache
+*.log
+*.tlog
+*.lastbuildstate
+*.ilk
+*.db
+*.exe
+*.dll
+*.lib
+*.exp
+*.iobj
+*.ipdb
+*.pch
+*.res
+*.rsp
+*.bak
+*.tmp
+*.log
+*.sbr
+*.tlh
+*.tli
+
+# 빌드 출력 폴더 무시
+Debug/
+Release/
+x64/
+x86/
+ARM/
+ARM64/
+out/
+bin/
+build/
